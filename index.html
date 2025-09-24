@@ -9,17 +9,11 @@
 <body>
   <main class="container">
     <h1>インフルエンザ予防接種予約フォーム</h1>
-
     <p class="notice">
       ※ 一度登録された方で変更がある場合、こちらのフォームでは修正できません。<br />
       恐れ入りますが、<strong>管理本部 総務</strong>までご連絡をお願いします。
     </p>
-
-    <details class="mode">
-      <summary>動作モード / データの扱いについて</summary>
-      <p>このフォームは <strong>GitHub Pages（サーバーレス）</strong> で動作する想定です。既定では端末のローカル保存（LocalStorage）を用います。
-      社内全体で重複チェック・一元管理を行う場合は、SharePoint リストや Google フォーム等のバックエンドと接続してください（下記「外部連携設定」参照）。</p>
-    </details>
+    <p class="admin-hint">管理者表示：URLの末尾に <code>?admin=1</code> または <code>#admin</code> を付与すると、管理向け機能が表示されます。</p>
 
     <form id="reservation-form" autocomplete="off">
       <div class="field">
@@ -50,17 +44,17 @@
 
       <div class="actions">
         <button type="submit" class="primary">登録する</button>
-        <button type="button" id="exportCsvBtn" class="ghost">CSVをエクスポート</button>
+        <button type="button" id="exportCsvBtn" class="ghost admin-only">CSVをエクスポート</button>
       </div>
     </form>
 
-    <section class="importer">
+    <section class="importer admin-only">
       <h2>既存データの取り込み（任意）</h2>
       <p>過去エクスポートした CSV を読み込むと、<strong>重複チェック対象</strong>に加えられます（社内共有PCなどでご利用ください）。</p>
       <input type="file" id="csvFile" accept=".csv" />
     </section>
 
-    <section>
+    <section class="admin-only">
       <h2>登録済み一覧（この端末）</h2>
       <div class="table-wrap">
         <table id="list">
@@ -79,7 +73,7 @@
     </section>
 
     <footer>
-      <details>
+      <details class="admin-only">
         <summary>外部連携設定（上級者向け・任意）</summary>
         <p>app.js の <code>CONFIG</code> に Webhook（Power Automate / GAS / 任意のAPI）を設定すると、
            登録内容をPOSTできます。POST成功後もローカル保存と重複チェックは継続します。</p>

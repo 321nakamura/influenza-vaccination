@@ -2,8 +2,8 @@
 
 /** 設定 **/
 const CONFIG = {
-  storageKey: 'flu2025_submissions', // LocalStorage キー
-  webhookUrl: '', // 例）'https://example.com/api/endpoint'（任意）
+  storageKey: 'flu2025_submissions',
+  webhookUrl: '', // 任意
 };
 
 const DEPARTMENTS = [
@@ -28,6 +28,20 @@ const els = {
   exportCsvBtn: document.getElementById('exportCsvBtn'),
   csvFile: document.getElementById('csvFile'),
 };
+
+function isAdminMode() {
+  const params = new URLSearchParams(location.search);
+  return params.get('admin') === '1' || location.hash === '#admin';
+}
+function applyAdminVisibility() {
+  if (isAdminMode()) {
+    document.body.classList.add('admin-visible');
+  } else {
+    document.body.classList.remove('admin-visible');
+  }
+}
+window.addEventListener('hashchange', applyAdminVisibility);
+applyAdminVisibility();
 
 function initDepartmentOptions() {
   els.department.innerHTML = '<option value="">選択してください</option>' +
@@ -57,6 +71,7 @@ function isDuplicateEmployeeId(employeeId, items) {
 }
 
 function addRow(item) {
+  if (!els.listTbody) return;
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td>${escapeHtml(item.employeeId)}</td>
@@ -69,6 +84,7 @@ function addRow(item) {
 }
 
 function renderList(items) {
+  if (!els.listTbody) return;
   els.listTbody.innerHTML = '';
   items.forEach(addRow);
 }
@@ -120,7 +136,7 @@ function handleCsvImport(file) {
   reader.onload = () => {
     try {
       const text = reader.result;
-      const lines = text.split(/\r?\n/).filter(Boolean);
+      const lines = text.split(/\\r?\\n/).filter(Boolean);
       if (!lines.length) return;
       const header = lines[0].split(',').map(s => s.replace(/^"|"$/g, ''));
       const idx = {
@@ -159,57 +175,62 @@ function handleCsvImport(file) {
   reader.readAsText(file, 'utf-8');
 }
 
-els.form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const employeeId = normalizeEmployeeId(els.employeeId.value);
-  const department = els.department.value;
-  const fullName = els.fullName.value.trim();
-  const choice = els.choice.value;
+if (els.form) {
+  els.form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const employeeId = normalizeEmployeeId(els.employeeId.value);
+    const department = els.department.value;
+    const fullName = els.fullName.value.trim();
+    const choice = els.choice.value;
 
-  if (!employeeId || !department || !fullName || !choice) {
-    alert('未入力の項目があります。');
-    return;
-  }
+    if (!employeeId || !department || !fullName || !choice) {
+      alert('未入力の項目があります。');
+      return;
+    }
 
-  let items = loadAll();
-  if (isDuplicateEmployeeId(employeeId, items)) {
-    alert('この社員番号は既に登録されています。重複登録はできません。');
-    return;
-  }
+    let items = loadAll();
+    if (isDuplicateEmployeeId(employeeId, items)) {
+      alert('この社員番号は既に登録されています。重複登録はできません。');
+      return;
+    }
 
-  const entry = {
-    employeeId,
-    department,
-    fullName,
-    choice,
-    createdAt: new Date().toISOString(),
-  };
+    const entry = {
+      employeeId,
+      department,
+      fullName,
+      choice,
+      createdAt: new Date().toISOString(),
+    };
 
-  // Webhook（任意）
-  const webhookRes = await postWebhook(entry);
-  if (webhookRes && webhookRes.ok === false) {
-    const cont = confirm('外部送信に失敗しました。ローカル保存のみ続行しますか？');
-    if (!cont) return;
-  }
+    const webhookRes = await postWebhook(entry);
+    if (webhookRes && webhookRes.ok === false) {
+      const cont = confirm('外部送信に失敗しました。ローカル保存のみ続行しますか？');
+      if (!cont) return;
+    }
 
-  items.push(entry);
-  saveAll(items);
-  renderList(items);
-  els.form.reset();
-  alert('登録しました。');
-});
+    items.push(entry);
+    saveAll(items);
+    renderList(items);
+    els.form.reset();
+    alert('登録しました。');
+  });
+}
 
-els.exportCsvBtn.addEventListener('click', () => {
-  const items = loadAll();
-  const csv = toCSV(items);
-  const ts = new Date().toISOString().slice(0,10).replace(/-/g,'');
-  download(`flu_reservations_${ts}.csv`, csv, 'text/csv');
-});
+if (els.exportCsvBtn) {
+  els.exportCsvBtn.addEventListener('click', () => {
+    const items = loadAll();
+    const csv = toCSV(items);
+    const ts = new Date().toISOString().slice(0,10).replace(/-/g,'');
+    download(`flu_reservations_${ts}.csv`, csv, 'text/csv');
+  });
+}
 
-els.csvFile.addEventListener('change', (e) => {
-  const file = e.target.files?.[0];
-  if (file) handleCsvImport(file);
-});
+if (els.csvFile) {
+  els.csvFile.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) handleCsvImport(file);
+  });
+}
 
 // 初期化
 initDepartmentOptions();
