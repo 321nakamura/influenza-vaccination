@@ -24,6 +24,7 @@ const els = {
   department: document.getElementById('department'),
   fullName: document.getElementById('fullName'),
   choice: document.getElementById('choice'),
+  place: document.getElementById('place'),
   listTbody: document.querySelector('#list tbody'),
   exportCsvBtn: document.getElementById('exportCsvBtn'),
   csvFile: document.getElementById('csvFile'),
@@ -44,8 +45,8 @@ window.addEventListener('hashchange', applyAdminVisibility);
 applyAdminVisibility();
 
 function initDepartmentOptions() {
-  els.department.innerHTML = '<option value="">選択してください</option>' +
-    DEPARTMENTS.map(d => `<option value="${d}">${d}</option>`).join('');
+  els.department.innerHTML = '<option value=\"\">選択してください</option>' +
+    DEPARTMENTS.map(d => `<option value=\"${d}\">${d}</option>`).join('');
 }
 
 function loadAll() {
@@ -62,7 +63,7 @@ function saveAll(items) {
 }
 
 function normalizeEmployeeId(val) {
-  return (val || '').trim().replace(/\s+/g, '').toUpperCase();
+  return (val || '').trim().replace(/\\s+/g, '').toUpperCase();
 }
 
 function isDuplicateEmployeeId(employeeId, items) {
@@ -78,6 +79,7 @@ function addRow(item) {
     <td>${escapeHtml(item.department)}</td>
     <td>${escapeHtml(item.fullName)}</td>
     <td>${escapeHtml(item.choice)}</td>
+    <td>${escapeHtml(item.place || '')}</td>
     <td>${new Date(item.createdAt).toLocaleString('ja-JP')}</td>
   `;
   els.listTbody.appendChild(tr);
@@ -91,7 +93,7 @@ function renderList(items) {
 
 function escapeHtml(str) {
   return String(str).replace(/[&<>"']/g, s => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;', \"'\": '&#39;'
   })[s]);
 }
 
@@ -111,12 +113,12 @@ async function postWebhook(data) {
 }
 
 function toCSV(items) {
-  const header = ['employee_id', 'department', 'full_name', 'choice', 'created_at'];
+  const header = ['employee_id', 'department', 'full_name', 'choice', 'place', 'created_at'];
   const rows = items.map(x => [
-    x.employeeId, x.department, x.fullName, x.choice, x.createdAt
+    x.employeeId, x.department, x.fullName, x.choice, x.place || '', x.createdAt
   ]);
   const all = [header, ...rows];
-  return all.map(cols => cols.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  return all.map(cols => cols.map(v => `\"${String(v).replace(/\"/g, '\"\"')}\"`).join(',')).join('\\r\\n');
 }
 
 function download(filename, content, mime = 'text/plain') {
@@ -138,25 +140,27 @@ function handleCsvImport(file) {
       const text = reader.result;
       const lines = text.split(/\\r?\\n/).filter(Boolean);
       if (!lines.length) return;
-      const header = lines[0].split(',').map(s => s.replace(/^"|"$/g, ''));
+      const header = lines[0].split(',').map(s => s.replace(/^\"|\"$/g, ''));
       const idx = {
         employeeId: header.indexOf('employee_id'),
         department: header.indexOf('department'),
         fullName: header.indexOf('full_name'),
         choice: header.indexOf('choice'),
+        place: header.indexOf('place'),
         createdAt: header.indexOf('created_at'),
       };
       const current = loadAll();
       let added = 0;
       for (let i = 1; i < lines.length; i++) {
-        const cols = lines[i].match(/("([^"]|"")*"|[^,]+)/g);
+        const cols = lines[i].match(/(\"([^\"]|\"\")*\"|[^,]+)/g);
         if (!cols) continue;
-        const get = (j) => (j >= 0 ? cols[j].replace(/^"|"$/g, '').replace(/""/g, '"') : '');
+        const get = (j) => (j >= 0 ? cols[j].replace(/^\"|\"$/g, '').replace(/\"\"/g, '\"') : '');
         const item = {
           employeeId: get(idx.employeeId),
           department: get(idx.department),
           fullName: get(idx.fullName),
           choice: get(idx.choice),
+          place: get(idx.place),
           createdAt: get(idx.createdAt) || new Date().toISOString(),
         };
         if (item.employeeId && !isDuplicateEmployeeId(item.employeeId, current)) {
@@ -182,8 +186,9 @@ if (els.form) {
     const department = els.department.value;
     const fullName = els.fullName.value.trim();
     const choice = els.choice.value;
+    const place = els.place.value;
 
-    if (!employeeId || !department || !fullName || !choice) {
+    if (!employeeId || !department || !fullName || !choice || !place) {
       alert('未入力の項目があります。');
       return;
     }
@@ -199,6 +204,7 @@ if (els.form) {
       department,
       fullName,
       choice,
+      place,
       createdAt: new Date().toISOString(),
     };
 
@@ -233,5 +239,11 @@ if (els.csvFile) {
 }
 
 // 初期化
-initDepartmentOptions();
-renderList(loadAll());
+(function init() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('admin') === '1' || location.hash === '#admin') {
+    document.body.classList.add('admin-visible');
+  }
+  initDepartmentOptions();
+  renderList(loadAll());
+})();

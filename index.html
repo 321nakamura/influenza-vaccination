@@ -9,10 +9,12 @@
 <body>
   <main class="container">
     <h1>インフルエンザ予防接種予約フォーム</h1>
-    <p class="notice">
-      ※ 一度登録された方で変更がある場合、こちらのフォームでは修正できません。<br />
-      恐れ入りますが、<strong>管理本部 総務</strong>までご連絡をお願いします。
-    </p>
+  <p class="notice">
+  ※ 費用は会社負担です。<br />
+  ※ 一度登録された方で変更がある場合、こちらのフォームでは修正できません。<br />
+  　恐れ入りますが、<strong>管理本部 総務</strong>までご連絡をお願いします。<br />
+  ※ 回答期限 ：<strong style="color:red;">9/28（日）</strong>
+</p>
 
     <form id="reservation-form" autocomplete="off">
       <div class="field">
@@ -41,6 +43,15 @@
         </select>
       </div>
 
+      <div class="field">
+        <label for="place">5. 接種場所 <span class="req">必須</span></label>
+        <select id="place" name="place" required>
+          <option value="">選択してください</option>
+          <option value="10/24バス健診">10/24バス健診</option>
+          <option value="ご自身の施設予約検診時">ご自身の施設予約検診時</option>
+        </select>
+      </div>
+
       <div class="actions">
         <button type="submit" class="primary">登録する</button>
         <button type="button" id="exportCsvBtn" class="ghost admin-only">CSVをエクスポート</button>
@@ -63,6 +74,7 @@
               <th>部署名</th>
               <th>お名前</th>
               <th>接種</th>
+              <th>接種場所</th>
               <th>登録日時</th>
             </tr>
           </thead>
