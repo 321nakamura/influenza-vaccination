@@ -27,6 +27,7 @@ const els = {
   place: document.getElementById('place'),
   listTbody: document.querySelector('#list tbody'),
   exportCsvBtn: document.getElementById('exportCsvBtn'),
+  clearBtn: document.getElementById('clearBtn'),
   csvFile: document.getElementById('csvFile'),
 };
 
@@ -60,6 +61,10 @@ function loadAll() {
 
 function saveAll(items) {
   localStorage.setItem(CONFIG.storageKey, JSON.stringify(items));
+}
+
+function clearAll() {
+  localStorage.removeItem(CONFIG.storageKey);
 }
 
 function normalizeEmployeeId(val) {
@@ -231,6 +236,25 @@ if (els.exportCsvBtn) {
   });
 }
 
+if (els.clearBtn) {
+  els.clearBtn.addEventListener('click', () => {
+    const items = loadAll();
+    if (items.length === 0) {
+      if (confirm('この端末には登録がありません。初期化しますか？（重複チェック履歴も消えます）')) {
+        clearAll();
+        renderList([]);
+        alert('初期化しました。');
+      }
+      return;
+    }
+    const ok = confirm('この端末に保存された登録データを全て削除します。よろしいですか？\\n※ 事前にCSVエクスポートでバックアップ取得を推奨します。');
+    if (!ok) return;
+    clearAll();
+    renderList([]);
+    alert('初期化しました。');
+  });
+}
+
 if (els.csvFile) {
   els.csvFile.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
@@ -238,7 +262,7 @@ if (els.csvFile) {
   });
 }
 
-// 初期化
+// 初期化処理
 (function init() {
   const params = new URLSearchParams(location.search);
   if (params.get('admin') === '1' || location.hash === '#admin') {

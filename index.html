@@ -9,12 +9,12 @@
 <body>
   <main class="container">
     <h1>インフルエンザ予防接種予約フォーム</h1>
-  <p class="notice">
-  ※ 費用は会社負担です。<br />
-  ※ 一度登録された方で変更がある場合、こちらのフォームでは修正できません。<br />
-  　恐れ入りますが、<strong>管理本部 総務</strong>までご連絡をお願いします。<br />
-  ※ 回答期限 ：<strong style="color:red;">9/28（日）</strong>
-</p>
+    <p class="notice">
+      ※ 費用は会社負担です。<br />
+      ※ 一度登録された方で変更がある場合、こちらのフォームでは修正できません。<br />
+      　恐れ入りますが、<strong>管理本部 総務</strong>までご連絡をお願いします。<br />
+      ※ 回答期限 ：<strong class="deadline">9/28（日）</strong>
+    </p>
 
     <form id="reservation-form" autocomplete="off">
       <div class="field">
@@ -55,7 +55,9 @@
       <div class="actions">
         <button type="submit" class="primary">登録する</button>
         <button type="button" id="exportCsvBtn" class="ghost admin-only">CSVをエクスポート</button>
+        <button type="button" id="clearBtn" class="danger admin-only">初期化（この端末の登録を全削除）</button>
       </div>
+      <p class="admin-only hint" style="margin-top:8px;">※ 初期化の前にCSVエクスポートでバックアップ取得を推奨します。</p>
     </form>
 
     <section class="importer admin-only">
