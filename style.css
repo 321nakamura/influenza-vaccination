@@ -3,7 +3,7 @@
   --bg: #fafafa;
   --fg: #111;
   --muted: #666;
-  --brand: #2563eb;
+  --brand: #16a34a;  /* 緑 */
   --border: #e5e7eb;
   --card: #fff;
   --danger: #dc2626;
@@ -20,8 +20,16 @@ label { display: block; font-weight: 600; margin-bottom: 6px; }
 input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
 .hint { color: var(--muted); }
 .actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-button { padding: 10px 14px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
-button.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+button { padding: 10px 14px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; font-size: 0.95rem; font-weight: 600; }
+button.primary {
+  background: #fff !important;       /* 白背景 */
+  color: var(--brand) !important;    /* 緑文字 */
+  border: 2px solid var(--brand) !important;
+}
+button.primary:hover {
+  background: var(--brand) !important;  /* 緑背景 */
+  color: #fff !important;               /* 白文字 */
+}
 button.ghost { background: #fff; }
 button.danger { background: #fff; border-color: var(--danger); color: var(--danger); }
 button.danger:hover { background: #fff5f5; }
@@ -35,14 +43,19 @@ summary { cursor: pointer; }
 .admin-visible .admin-only{ display:block; }
 /* Deadline emphasize */
 .deadline { color: var(--danger); font-weight: 700; }
-/* Hidden admin toggle hit-area (bottom-right 18x18px) */
+/* 管理モードトグル（右下） */
 .admin-toggle {
   position: fixed;
-  bottom: 6px;
-  right: 6px;
-  width: 18px;
-  height: 18px;
-  opacity: 0;
-  border: none;
-  background: transparent;
+  bottom: 10px;
+  right: 10px;
+  min-width: 38px;
+  height: 32px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffffcc;
+  backdrop-filter: saturate(180%) blur(6px);
+  opacity: 0.75;
 }
+.admin-toggle:hover { opacity: 1; }
