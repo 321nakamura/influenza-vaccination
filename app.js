@@ -29,21 +29,36 @@ const els = {
   exportCsvBtn: document.getElementById('exportCsvBtn'),
   clearBtn: document.getElementById('clearBtn'),
   csvFile: document.getElementById('csvFile'),
+  adminToggle: document.getElementById('adminToggle'),
 };
 
+function setAdminVisible(on) {
+  document.body.classList.toggle('admin-visible', on);
+}
 function isAdminMode() {
   const params = new URLSearchParams(location.search);
   return params.get('admin') === '1' || location.hash === '#admin';
 }
 function applyAdminVisibility() {
-  if (isAdminMode()) {
-    document.body.classList.add('admin-visible');
-  } else {
-    document.body.classList.remove('admin-visible');
-  }
+  setAdminVisible(isAdminMode());
 }
 window.addEventListener('hashchange', applyAdminVisibility);
 applyAdminVisibility();
+
+// Keyboard shortcut: Alt+Shift+A to toggle admin
+window.addEventListener('keydown', (e) => {
+  if (e.altKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
+    e.preventDefault();
+    setAdminVisible(!document.body.classList.contains('admin-visible'));
+  }
+});
+
+// Hidden corner button to toggle admin
+if (els.adminToggle) {
+  els.adminToggle.addEventListener('click', () => {
+    setAdminVisible(!document.body.classList.contains('admin-visible'));
+  });
+}
 
 function initDepartmentOptions() {
   els.department.innerHTML = '<option value=\"\">選択してください</option>' +
@@ -264,8 +279,7 @@ if (els.csvFile) {
 
 // 初期化処理
 (function init() {
-  const params = new URLSearchParams(location.search);
-  if (params.get('admin') === '1' || location.hash === '#admin') {
+  if (isAdminMode()) {
     document.body.classList.add('admin-visible');
   }
   initDepartmentOptions();
