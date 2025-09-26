@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>インフルエンザ予防接種予約フォーム</title>
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="./style.css?v=20250926d" />
 </head>
 <body>
   <main class="container">
@@ -62,7 +62,7 @@
 
     <section class="importer admin-only">
       <h2>既存データの取り込み（任意）</h2>
-      <p>過去エクスポートした CSV を読み込むと、<strong>重複チェック対象</strong>に加えられます（社内共有PCなどでご利用ください）。</p>
+      <p>過去エクスポートした CSV を読み込むと、<strong>重複チェック対象</strong>に加えられます。</p>
       <input type="file" id="csvFile" accept=".csv" />
     </section>
 
@@ -87,17 +87,16 @@
 
     <footer>
       <details class="admin-only">
-        <summary>外部連携設定（上級者向け・任意）</summary>
-        <p>app.js の <code>CONFIG</code> に Webhook（Power Automate / GAS / 任意のAPI）を設定すると、
-           登録内容をPOSTできます。POST成功後もローカル保存と重複チェックは継続します。</p>
+        <summary>外部連携設定（任意）</summary>
+        <p>app.js の <code>CONFIG</code> に Webhook を設定すると、登録内容をPOSTできます。</p>
       </details>
       <p class="copy">&copy; Nishikawa Printing Group</p>
     </footer>
   </main>
 
-  <!-- 管理モードトグル（右下の小さなボタン） -->
-  <button id="adminToggle" title="管理モードを切替" class="admin-toggle" aria-label="管理モード">管理</button>
+  <!-- 管理モード切替 -->
+  <button id="adminToggle" title="管理モードを切替" class="admin-toggle">管理</button>
 
-  <script src="./app.js?v=20250926-7.0"></script>
+  <script src="./app.js?v=20250926d"></script>
 </body>
 </html>

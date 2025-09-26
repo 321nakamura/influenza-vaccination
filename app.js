@@ -17,7 +17,7 @@ const DEPARTMENTS = [
   '印刷生産課',
   '加工生産課',
   '用紙管理課',
-  // 追加例：'三栄印刷', 'バッハベルク'
+  // '三栄印刷', 'バッハベルク' など追記可
 ];
 
 let els = {};
@@ -169,7 +169,7 @@ function handleCsvImport(file) {
   reader.readAsText(file, 'utf-8');
 }
 
-/** 初期化（DOMContentLoadedで安全に要素を取得） */
+/** 初期化（DOMContentLoadedで要素確実化） */
 document.addEventListener('DOMContentLoaded', () => {
   els = {
     form: q('reservation-form'),
@@ -185,11 +185,11 @@ document.addEventListener('DOMContentLoaded', () => {
     adminToggle: q('adminToggle'),
   };
 
-  // 管理画面の表示条件
+  // 管理モード可視化
   applyAdminVisibility();
   window.addEventListener('hashchange', applyAdminVisibility);
 
-  // ショートカット: Alt+Shift+A で管理表示切替
+  // Alt+Shift+A で管理表示切替
   window.addEventListener('keydown', (e) => {
     if (e.altKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
       e.preventDefault();
@@ -197,23 +197,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 右下の「管理」ボタンでトグル
+  // 右下の「管理」ボタン
   if (els.adminToggle) {
     els.adminToggle.addEventListener('click', () => {
       const to = !document.body.classList.contains('admin-visible');
-      // 誤操作防止の簡易確認
       if (to && !confirm('管理モードを表示しますか？\n（CSV出力・初期化などの操作が可能になります）')) return;
       setAdminVisible(to);
     });
   }
 
-  // 部署プルダウンの生成
+  // 部署プルダウン生成
   initDepartmentOptions();
 
-  // 一覧の描画
+  // 既存一覧描画
   renderList(loadAll());
 
-  // フォーム送信
+  // 送信処理
   if (els.form) {
     els.form.addEventListener('submit', async (e) => {
       e.preventDefault();
