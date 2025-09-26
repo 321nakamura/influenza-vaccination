@@ -21,7 +21,7 @@ input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid 
 .hint { color: var(--muted); }
 .actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
 button { padding: 10px 14px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
-button.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+button.primary { background: --brand; color: #fff; border-color: var(--brand); }
 button.ghost { background: #fff; }
 button.danger { background: #fff; border-color: var(--danger); color: var(--danger); }
 button.danger:hover { background: #fff5f5; }
@@ -35,14 +35,19 @@ summary { cursor: pointer; }
 .admin-visible .admin-only{ display:block; }
 /* Deadline emphasize */
 .deadline { color: var(--danger); font-weight: 700; }
-/* Hidden admin toggle hit-area (bottom-right 18x18px) */
+/* 管理モードトグル（右下） */
 .admin-toggle {
   position: fixed;
-  bottom: 6px;
-  right: 6px;
-  width: 18px;
-  height: 18px;
-  opacity: 0;
-  border: none;
-  background: transparent;
+  bottom: 10px;
+  right: 10px;
+  min-width: 38px;
+  height: 32px;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: #ffffffcc;
+  backdrop-filter: saturate(180%) blur(6px);
+  opacity: 0.75;
 }
+.admin-toggle:hover { opacity: 1; }
