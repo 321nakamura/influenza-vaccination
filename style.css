@@ -20,8 +20,13 @@ label { display: block; font-weight: 600; margin-bottom: 6px; }
 input[type="text"], select { width: 100%; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 10px; background: #fff; }
 .hint { color: var(--muted); }
 .actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-button { padding: 10px 14px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; }
-button.primary { background: --brand; color: #fff; border-color: var(--brand); }
+button { padding: 10px 14px; border-radius: 10px; border: 1px solid #e5e7eb; background: #fff; cursor: pointer; font-size: 0.95rem; }
+button.primary {
+  background: var(--brand);
+  color: #fff;          /* 修正: 文字色を白に */
+  border-color: var(--brand);
+  font-weight: 600;     /* 文字を太字に */
+}
 button.ghost { background: #fff; }
 button.danger { background: #fff; border-color: var(--danger); color: var(--danger); }
 button.danger:hover { background: #fff5f5; }
